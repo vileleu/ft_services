@@ -5,15 +5,19 @@ RUN apk update \
 	&& apk add openssl \
 	&& apk add openssh
 
-COPY default.conf etc/nginx/conf.d/default.conf
+RUN rm -rf etc/nginx/nginx.conf
+COPY nginx.conf etc/nginx/nginx.conf
 COPY index.html /var/www/localhost/htdocs/index.html
+COPY sshd_config etc/ssh/sshd_config
+COPY start.sh ./start.sh
 
 #creer securite ssl et cle ssh
-RUN openssl req -x509 -nodes -days 365 -newkey -subj '/CN=FR' rsa:4096 -keyout etc/ssl/certs/nginx_services.key -out etc/ssl/certs/nginx_services.crt
-RUN ssh-keygen -A
-
-#creer un nouvel user
-RUN start.sh
+RUN mkdir -p var/run/nginx \
+	&& mkdir -p etc/nginx/ssl \
+	&& openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout etc/nginx/ssl/services.key -out etc/nginx/ssl/services.crt -subj '/CN=FR' \
+	&& ssh-keygen -A
 
 #ports necessaire pour nginx
 EXPOSE 80 443 22
+
+CMD sh start.sh
