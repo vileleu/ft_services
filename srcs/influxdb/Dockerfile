@@ -1,16 +1,14 @@
 FROM alpine:latest
 
 RUN apk update \
-	&& apk add mysql mysql-client \
+	&& apk add influxdb \
 	&& apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
 
 RUN mkdir -p etc/telegraf/
 COPY telegraf.conf etc/telegraf/telegraf.conf
 
-COPY my.cnf ./etc/
-COPY init_db.sql ./
 COPY start.sh ./
 
-EXPOSE 3306
+EXPOSE 8086
 
 ENTRYPOINT sh start.sh
