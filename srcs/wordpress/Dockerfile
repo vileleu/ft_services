@@ -7,15 +7,15 @@ RUN apk update \
 	&& apk del apache2 \
 	&& apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
 
-RUN mkdir var/www/ \
-	&& mkdir -p etc/telegraf \
-	&& wget https://wordpress.org/latest.zip \
-	&& unzip latest.zip -d var/www/ \
-	&& rm -rf latest.zip wordpress
-
 COPY start.sh ./
 COPY wp-config.php ./var/www/wordpress/
 COPY telegraf.conf etc/telegraf/telegraf.conf
+COPY latest.zip ./
+
+RUN mkdir -p var/www/ \
+	&& mkdir -p etc/telegraf \
+	&& unzip latest.zip -d var/www/ \
+	&& rm -rf latest.zip
 
 RUN chmod 755 ./start.sh
 
