@@ -19,12 +19,12 @@ do
 	printf "."
 	sleep 0.1
 	printf ""
-	printf "${BLUE} ${services[name]} service successfully delete${RESET}"
+	printf "${BLUE} ${services[name]} service successfully delete\n${RESET}"
 done
 
 kubectl delete -f srcs/metallb.yaml > /dev/null
 
-printf "${BLUE}100% /${RESET}"
+printf "${BLUE}100%${RESET}"
 
 printf "\n${GREEN}----------Clean complete !----------\n${BLUE}"
 
