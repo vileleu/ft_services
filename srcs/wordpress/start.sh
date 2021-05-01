@@ -1,4 +1,4 @@
-telegraf &
-php -S 0.0.0.0:5050 -t var/www/wordpress
-#-S addresse:port Exécuter avec le serveur Web intégré
-#-t Spécifie la racine du document pour le serveur Web intégré
+/usr/sbin/php-fpm7
+service nginx restart
+rm ./wordpress/wp-config-sample.php
+/usr/bin/telegraf --config /etc/telegraf/telegraf.conf

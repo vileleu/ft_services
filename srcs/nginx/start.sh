@@ -1,7 +1,3 @@
-/usr/sbin/sshd
-
-adduser -D "admin"
-echo "admin:admin" | chpasswd
-
-telegraf &
-nginx -g 'daemon off;'
+service nginx start
+service sshd start
+/usr/bin/telegraf --config /etc/telegraf/telegraf.conf

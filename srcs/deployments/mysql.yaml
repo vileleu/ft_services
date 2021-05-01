@@ -18,10 +18,16 @@ spec:
       - image: service_mysql
         name: mysql
         imagePullPolicy: Never
+        livenessProbe:
+          tcpSocket:
+            port: 3306
         ports:
-        - containerPort: 3306
-          name: mysql
+          - containerPort: 3306
+            name: mysql
+        volumeMounts:
+        - name: mysql-pv
+          mountPath: /var/lib/mysql
       volumes:
-      - name: mysql-storage
+      - name: mysql-pv
         persistentVolumeClaim:
-          claimName: mysql-volume
+          claimName: mysql-pvc

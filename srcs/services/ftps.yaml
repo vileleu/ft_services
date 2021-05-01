@@ -4,12 +4,18 @@ metadata:
   name: ftps
   labels:
     app: ftps
+  annotations:
+    metallb.universe.tf/allow-shared-ip: test
 spec:
   type: LoadBalancer
   selector:
     app: ftps
   ports:
-  - port: 21
+  - name: ftps
+    port: 21
     targetPort: 21
     protocol: TCP
-    name: ftps
+  - name: data
+    port: 30000
+    targetPort: 30000
+    protocol: TCP

@@ -15,9 +15,6 @@ spec:
         app: ftps
     spec:
       containers:
-      - image: service_ftps
-        name: ftps
+      - name: ftps
+        image: service_ftps
         imagePullPolicy: Never
-        ports:
-        - containerPort: 21
-          hostPort: 21

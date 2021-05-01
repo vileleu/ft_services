@@ -18,10 +18,16 @@ spec:
       - image: service_influxdb
         name: influxdb
         imagePullPolicy: Never
+        livenessProbe:
+          tcpSocket:
+            port: 8086
         ports:
-        - containerPort: 8086
-          name: influxdb
+          - containerPort: 8086
+            name: influxdb
+        volumeMounts:
+        - name: influxdb-pv
+          mountPath: /var/lib/influxdb
       volumes:
-      - name: influxdb-storage
+      - name: influxdb-pv
         persistentVolumeClaim:
-          claimName: influxdb-volume
+          claimName: influxdb-pvc

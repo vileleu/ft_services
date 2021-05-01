@@ -1,16 +1,25 @@
 FROM alpine:latest
 
-RUN apk update \
-	&& apk add mysql mysql-client \
-	&& apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
-
-RUN mkdir -p etc/telegraf/
-COPY telegraf.conf etc/telegraf/telegraf.conf
-
-COPY my.cnf ./etc/
-COPY init_db.sql ./
 COPY start.sh ./
+COPY telegraf.conf ./
 
-EXPOSE 3306
+RUN apk update && \
+	apk -U upgrade
 
-ENTRYPOINT sh start.sh
+RUN apk --no-cache add mysql mysql-client libc6-compat openrc && openrc reboot
+
+RUN	apk add --no-cache telegraf && \
+	mkdir -p /etc/telegraf && \
+	mv telegraf.conf /etc/telegraf/telegraf.conf
+
+COPY my.cnf /etc/my.cnf
+
+RUN mkdir -p /var/lib/mysql /run/mysqld/
+RUN chown -R mysql:root /run/mysqld/
+
+COPY prob.sh ./
+COPY wp.sql ./
+
+EXPOSE 3306 
+
+CMD sh start.sh

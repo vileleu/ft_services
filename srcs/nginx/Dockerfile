@@ -1,31 +1,31 @@
 FROM alpine:latest
 
-RUN apk update \
-	&& apk add nginx \
-	&& apk add openssl \
-	&& apk add openssh \
-	&& apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
+COPY start.sh ./
+COPY telegraf.conf ./
 
-RUN rm -rf etc/nginx/conf.d/nginx.conf
+RUN apk update && \
+	apk -U upgrade
 
-COPY nginx.conf etc/nginx/conf.d/default.conf
-COPY index.html /usr/share/nginx/html/index.html
+RUN apk add --no-cache nginx libc6-compat openssl curl ca-certificates openrc openssh && openrc reboot
 
-RUN rm -rf etc/ssh/sshd_config
-COPY sshd_config etc/ssh/sshd_config
+RUN	apk add --no-cache telegraf && \
+	mkdir -p /etc/telegraf && \
+	mv telegraf.conf /etc/telegraf/telegraf.conf
 
-RUN mkdir -p etc/telegraf
-COPY telegraf.conf etc/telegraf/telegraf.conf
+RUN mkdir -p run/nginx/ && \
+	mkdir -p etc/ssl/private && \
+	mkdir -p etc/ssl/certs && \
+	openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /etc/ssl/private/nginx.key -out /etc/ssl/certs/nginx.crt -subj '/CN=FR'
 
-COPY start.sh ./start.sh
+COPY index.html /var/www/index.html
+	
+RUN	adduser -D "admin" && \
+	echo "admin:admin123" | chpasswd && \
+	ssh-keygen -A
 
-#creer securite ssl et cle ssh
-RUN mkdir -p run/nginx \
-	&& mkdir -p etc/nginx/ssl \
-	&& openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout etc/nginx/ssl/services.key -out etc/nginx/ssl/services.crt -subj '/CN=FR' \
-	&& ssh-keygen -A
+RUN	mkdir -p /etc/nginx/
+COPY site.conf /etc/nginx/conf.d/default.conf
 
-#ports necessaire pour nginx
 EXPOSE 80 443 22
 
 CMD sh start.sh

@@ -1,2 +1,1 @@
-telegraf &
-cd grafana-6.7.2/bin/ && ./grafana-server
+/usr/bin/telegraf --config /etc/telegraf/telegraf.conf & /usr/sbin/grafana-server --homepath=/usr/share/grafana

@@ -15,7 +15,7 @@ declare(strict_types=1);
  * This is needed for cookie based authentication to encrypt password in
  * cookie. Needs to be 32 chars long.
  */
-$cfg['blowfish_secret'] = ''; /* YOU MUST FILL IN THIS FOR COOKIE AUTH! */
+$cfg['blowfish_secret'] = 'Tj36=gCVIst5pkNah{yjY8,W0;b6MEQj'; /* YOU MUST FILL IN THIS FOR COOKIE AUTH! */
 
 /**
  * Servers configuration
@@ -25,20 +25,13 @@ $i = 0;
 /**
  * First server
  */
-//$i++;
+$i++;
 /* Authentication type */
-//$cfg['Servers'][$i]['verbose'] = 'mysql wampserver';
-//$cfg['Servers'][$i]['auth_type'] = 'cookie';
-//$cfg['Servers'][$i]['auth_type'] = 'config';
-$cfg['Servers'][$i]['user'] = 'admin';
-$cfg['Servers'][$i]['password'] = 'admin';
+$cfg['Servers'][$i]['auth_type'] = 'cookie';
 /* Server parameters */
 $cfg['Servers'][$i]['host'] = 'mysql';
-//$cfg['Servers'][$i]['connect_type'] = 'tcp';
 $cfg['Servers'][$i]['compress'] = false;
-/* Select mysql if your server does not have mysqli */
-//$cfg['Servers'][$i]['extension'] = 'mysqli';
-$cfg['Servers'][$i]['AllowNoPassword'] = false;
+$cfg['Servers'][$i]['AllowNoPassword'] = true;
 
 /**
  * phpMyAdmin configuration storage settings.

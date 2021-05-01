@@ -1,19 +1,26 @@
 FROM alpine:latest
 
-RUN apk update \
-	&& apk add wget
-
-RUN wget https://dl.grafana.com/oss/release/grafana-6.7.2.linux-amd64.tar.gz \
-	&& tar -zxvf grafana-6.7.2.linux-amd64.tar.gz \
-	&& apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/main libc6-compat \
-	&& apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
-
-RUN mkdir -p etc/telegraf/
-
-COPY telegraf.conf etc/telegraf/telegraf.conf
-COPY grafana.db /grafana-6.7.2/data/
 COPY start.sh ./
+COPY dashboard.json ./
+COPY dashboard.yaml ./
+COPY datasource.yaml ./
+COPY telegraf.conf ./
+
+RUN apk update && \
+	apk -U upgrade
+
+RUN	apk add --no-cache telegraf && \
+	mkdir -p /etc/telegraf && \
+	mv telegraf.conf /etc/telegraf/telegraf.conf
+
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ grafana && \
+	mkdir -p /var/lib/grafana/dashboards && \
+	mv datasource.yaml /usr/share/grafana/conf/provisioning/datasources/ && \
+	mv dashboard.yaml /usr/share/grafana/conf/provisioning/dashboards/ && \
+	mv dashboard.json /var/lib/grafana/dashboards/
 
 EXPOSE 3000
 
-CMD sh start.sh
+RUN chmod +x ./start.sh
+
+CMD ./start.sh

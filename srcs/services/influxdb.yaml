@@ -4,22 +4,24 @@ metadata:
   name: influxdb
   labels:
     app: influxdb
+  annotations:
+    metallb.universe.tf/allow-shared-ip: test
 spec:
   type: ClusterIP
   selector:
     app: influxdb
   ports:
-  - port: 8086
+  - name: http
+    port: 8086
     targetPort: 8086
     protocol: TCP
-    name: http
 
 ---
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: influxdb-volume
+  name: influxdb-pvc
   labels:
     app: influxdb
 spec:

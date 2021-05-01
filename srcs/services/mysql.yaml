@@ -4,22 +4,24 @@ metadata:
   name: mysql
   labels:
     app: mysql
+  annotations:
+    metallb.universe.tf/allow-shared-ip: test
 spec:
   type: ClusterIP
   selector:
     app: mysql
   ports:
-  - port: 3306
+  - name: mysql
+    port: 3306
     targetPort: 3306
     protocol: TCP
-    name: mysql
 
 ---
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-volume
+  name: mysql-pvc
   labels:
     app: mysql
 spec:

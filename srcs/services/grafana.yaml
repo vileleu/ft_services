@@ -4,12 +4,13 @@ metadata:
   name: grafana
   labels:
     app: grafana
+  annotations:
+    metallb.universe.tf/allow-shared-ip: test
 spec:
   type: LoadBalancer
   selector:
     app: grafana
   ports:
-  - port: 3000
-    targetPort: 3000
+  - name: http
+    port: 3000
     protocol: TCP
-    name: grafana

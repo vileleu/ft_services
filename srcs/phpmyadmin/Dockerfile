@@ -1,23 +1,32 @@
 FROM alpine:latest
 
-RUN apk update \
-	&& apk add wget \
-	&& apk add unzip \
-	&& apk add php7 php7-fpm php7-opcache php7-gd php7-mysqli php7-zlib php7-curl php7-mbstring php7-json php7-session \
-	&& apk del apache2 \
-	&& apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
-
-RUN mkdir -p var/www/ \
-	mkdir -p etc/telegraf/ \
-	&& wget https://files.phpmyadmin.net/phpMyAdmin/5.0.2/phpMyAdmin-5.0.2-all-languages.zip \
-	&& unzip phpMyAdmin-5.0.2-all-languages.zip \
-	&& mv phpMyAdmin-5.0.2-all-languages var/www/ \
-	&& rm -rf phpMyAdmin-5.0.2-all-languages.zip
-
-COPY config.inc.php var/www/phpMyAdmin-5.0.2-all-languages
-COPY telegraf.conf etc/telegraf/telegraf.conf
+COPY telegraf.conf ./
 COPY start.sh ./
+
+RUN apk update && \
+	apk -U upgrade
+
+RUN apk add libc6-compat php7-fpm php7-common php7-iconv php7-json php7-gd php7-curl php7-xml php7-mysqli php7-imap php7-cgi fcgi \
+    php7-pdo php7-pdo_mysql php7-soap php7-xmlrpc php7-posix php7-mcrypt php7-gettext php7-ldap php7-ctype php7-dom nginx phpmyadmin wget tar openrc && openrc reboot
+
+RUN	apk add --no-cache telegraf && \
+	mkdir -p /etc/telegraf && \
+	mv telegraf.conf /etc/telegraf/telegraf.conf
+
+RUN mkdir /run/nginx
+RUN mkdir -p /usr/share/webapps/
+
+WORKDIR /usr/share/webapps/
+
+RUN wget https://files.phpmyadmin.net/phpMyAdmin/5.1.0/phpMyAdmin-5.1.0-english.tar.gz
+RUN tar zxvf phpMyAdmin-5.1.0-english.tar.gz 
+RUN rm phpMyAdmin-5.1.0-english.tar.gz
+RUN mv phpMyAdmin-5.1.0-english phpmyadmin
+RUN chmod -R 777 /usr/share/webapps/phpmyadmin
+
+COPY config.inc.php /etc/phpmyadmin/config.inc.php
+COPY site.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 5000
 
-CMD sh start.sh
+CMD sh /start.sh
